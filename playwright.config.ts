@@ -2,28 +2,20 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  fullyParallel: true,
-  timeout: 30000,
-  retries: 0,
-  workers: 3, // Runs 3 test workers in parallel
+  timeout: 60000, // Increased timeout so slowMo actions do not cause test timeouts
   use: {
-    baseURL: 'https://www.betterroaming.com',
-    trace: 'on-first-retry',
+    baseURL: 'https://demoqa.com',
+    headless: false, // Opens visible browser window
+    launchOptions: {
+      slowMo: 1000, // Delays every action by 1000ms (1 second)
+    },
     screenshot: 'only-on-failure',
-    headless: true
+    trace: 'retain-on-failure',
   },
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
     },
   ],
 });
