@@ -1,5 +1,5 @@
 {
-  "name": "webtables-automation",
+  "name": "betterroaming-tests",
   "version": "1.0.0",
   "scripts": {
     "test": "npx playwright test",
