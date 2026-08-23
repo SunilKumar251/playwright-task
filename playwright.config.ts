@@ -10,7 +10,10 @@ export default defineConfig({
     baseURL: 'https://www.betterroaming.com',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    headless: true
+    headless: false,
+    launchOptions: {
+      slowMo: 1000,
+    },
   },
   projects: [
     {
