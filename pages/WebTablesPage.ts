@@ -76,12 +76,9 @@ export class WebTablesPage {
     await this.searchInput.fill('');
     await this.searchInput.fill(searchTerm);
 
-    await this.searchButton.waitFor({ state: 'visible' });
-    await this.searchButton.click();
-
-    const editButton = this.page.locator('#edit-record-1');
-    await editButton.waitFor({ state: 'visible' });
-    await editButton.click({ force: true });
+    const targetRow = this.page.locator('table tbody tr').filter({ hasText: searchTerm });
+    await expect(targetRow).toHaveCount(1);
+    await targetRow.locator('[id^="edit-record-"]').click({ force: true });
   }
 
   // Step 4: Clear React input state and update salary
@@ -99,11 +96,24 @@ export class WebTablesPage {
 
   // Assert user's salary matches expected value
   async verifyUserSalary(email: string, expectedSalary: string) {
-    const targetRow = this.page.locator('.rt-tr-group', {
-      has: this.page.locator('.rt-td', { hasText: email }),
-    });
+    const targetRow = this.page.locator('table tbody tr').filter({ hasText: email });
 
-    const salaryCell = targetRow.locator('.rt-td').nth(4);
+    const salaryCell = targetRow.locator('td').nth(4);
     await expect(salaryCell).toHaveText(expectedSalary);
+  }
+
+  async verifyMatchingRows(searchTerm: string, expectedCount: number) {
+    await this.searchInput.fill(searchTerm);
+
+    const matchingRows = this.page.locator('table tbody tr').filter({ hasText: searchTerm });
+
+    await expect(matchingRows).toHaveCount(expectedCount);
+  }
+
+  async deleteRecord(searchTerm: string) {
+    const targetRow = this.page.locator('table tbody tr').filter({ hasText: searchTerm });
+
+    await expect(targetRow).toHaveCount(1);
+    await targetRow.locator('[id^="delete-record-"]').click({ force: true });
   }
 }

@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 import { WebTablesPage, UserRecord } from '../pages/WebTablesPage';
 
-test('Full WebTables flow with pre-edit salary assertion', async ({ page }) => {
+test('creates, filters, updates, and deletes a WebTables record', async ({ page }) => {
   const webTables = new WebTablesPage(page);
 
   const testUser: UserRecord = {
@@ -13,25 +13,26 @@ test('Full WebTables flow with pre-edit salary assertion', async ({ page }) => {
     department: 'QA',
   };
 
-  const cierraEmail = 'cierra@example.com';
-  const originalSalary = '10000';
-  const updatedSalary = '50000';
+  const email = 'test@example.com';
+  const updatedSalary = '65000';
 
-  // Step 1: Navigate to WebTables
+  // 1. Navigate to WebTables.
   await webTables.navigate();
 
-  // Step 2: Add new record for test@example.com
+  // 2. Add the requested record.
   await webTables.addRecord(testUser);
 
-  // Step 3: Search for cierra@example.com and click edit icon
-  await webTables.searchAndClickEditPath(cierraEmail);
+  // 3. Search for test@example.com and verify exactly one matching row.
+  await webTables.verifyMatchingRows(email, 1);
 
-  // Step 4: Assert original salary is 10000 BEFORE updating
-  await webTables.verifyUserSalary(cierraEmail, originalSalary);
-
-  // Step 5: Update salary to 50000
+  // 4. Edit the new record and update its salary.
+  await webTables.searchAndClickEditPath(email);
   await webTables.updateSalary(updatedSalary);
 
-  // Step 6: Assert salary updated to 50000 and close test
-  await webTables.verifyUserSalary(cierraEmail, updatedSalary);
+  // 5. Verify the updated salary for test@example.com.
+  await webTables.verifyUserSalary(email, updatedSalary);
+
+  // 6. Delete the record and verify no matching rows remain.
+  await webTables.deleteRecord(email);
+  await webTables.verifyMatchingRows(email, 0);
 });
